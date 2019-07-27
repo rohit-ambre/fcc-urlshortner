@@ -10,12 +10,14 @@ const dns = require('dns');
 
 var app = express();
 
+const urlSave = require('./model');
 // Basic Configuration 
 var port = process.env.PORT || 3000;
 
 /** this project needs a db !! **/ 
 console.log(process.env.MONGO_URI)
-// mongoose.connect(process.env.MONGO_URI, { useMongoClient: true });
+const DBurl = process.env.MONGO_URI;
+mongoose.connect(DBurl, { useNewUrlParser: true });
 
 app.use(cors());
 
@@ -26,27 +28,36 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public', express.static(process.cwd() + '/public'));
 
 app.get('/', function(req, res){
-  res.sendFile(process.cwd() + '/views/index.html');
+    res.sendFile(process.cwd() + '/views/index.html');
 });
 
   
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+    res.json({greeting: 'hello API'});
 });
 
 
 app.post("/api/shorturl/new",function(req,res){
-  const longUrl = new URL(req.body.url);
+    const longUrl = new URL(req.body.url);
 
-  dns.lookup(longUrl.hostname,function(err,address, family){
-    if (err){
-      console.log(err)
-      res.json({"error":"invalid URL"});
-    }else{
-      res.json({"fj":req.body.url})
-    }
-  })
+    dns.lookup(longUrl.hostname,function(err,address, family){
+        if (err){
+            console.log(err)
+            res.json({"error":"invalid URL"});
+        }else{
+            // res.json({"fj":req.body.url})
+            urlSave.createNew(longUrl, function(err, shortUrl){
+                if(err){
+                    console.log("create error");
+                    console.log(err);
+                    res.json({"error":"Database issues"});
+                }else{
+                    res.json({original_url: longUrl, short_url: shortUrl});
+                }
+            });
+        }
+    })
   
 })
 
@@ -56,5 +67,5 @@ app.get("api/shorturl/:new_url",function(req,res){
 
 
 app.listen(port, function () {
-  console.log('Node.js listening ...');
+    console.log('Node.js listening ...');
 });

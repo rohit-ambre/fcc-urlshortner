@@ -1,8 +1,9 @@
 {
-	"name": "shorturl",
+	"name": "fcc-shorturl",
 	"version": "0.0.1",
 	"description": "API project for freeCodeCamp",
 	"main": "server.js",
+	"author": "Rohit ambre, Fcc",
 	"scripts": {
 		"start": "node server.js"
 	},
@@ -18,12 +19,13 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://hyperdev.com/#!/project/welcome-project"
+		"url": "https://github.com/rohit-ambre/fcc-urlshortner.git"
 	},
 	"keywords": [
 		"node",
 		"hyperdev",
-		"express"
+		"express",
+		"freecodecamp"
 	],
 	"license": "MIT"
 }
