@@ -78,3 +78,14 @@ function findLargestUrl(callback){
         return callback(null, data[0].shortUrl);
     });
 }
+
+
+exports.getLongUrl = function (shortID,callback){
+    URL.findOne({shortUrl:shortID}, function(err,res){
+        if(res){
+            return callback(null,res.longUrl)
+        }else{
+            return callback(err,null)
+        }
+    })
+}

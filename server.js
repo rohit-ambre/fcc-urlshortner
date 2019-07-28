@@ -37,6 +37,16 @@ app.get("/api/hello", function (req, res) {
     res.json({greeting: 'hello API'});
 });
 
+app.get("/api/shorturl/:url",function(req,res){
+    console.log(req.params)
+    urlSave.getLongUrl(req.params.url,function(err,data){
+        if(err){
+            res.json({"error":"Database issues"})
+        }else{
+            res.redirect(data)
+        }
+    })
+})
 
 app.post("/api/shorturl/new",function(req,res){
     const longUrl = new URL(req.body.url);
@@ -61,9 +71,6 @@ app.post("/api/shorturl/new",function(req,res){
   
 })
 
-app.get("api/shorturl/:new_url",function(req,res){
-  
-})
 
 
 app.listen(port, function () {
