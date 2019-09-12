@@ -4,40 +4,38 @@ var mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 const urlsSchema = new Schema({
-    longUrl:  String,
+    longUrl: String,
     shortUrl: Number
 });
 
 const URL = mongoose.model('urls', urlsSchema);
 
 
-exports.createNew = function(longUrl,done){
-    // return done(null,"shortURL")
-    isCollEmpty(function(err,res){
+exports.createNew = function (longUrl, done) {
+    isCollEmpty(function (err, res) {
         if (err) return done(err);
-        if(res){
-            const url = new URL({ longUrl: longUrl, shortUrl: 1})
-            url.save(function(err,data){
-                if(err) return done(err, null)
-                else{
+        if (res) {
+            const url = new URL({ longUrl: longUrl, shortUrl: 1 })
+            url.save(function (err, data) {
+                if (err) return done(err, null)
+                else {
                     return done(null, data.shortUrl)
                 }
             })
-        }else{
-            isUrlinDB(longUrl, function(err,res){
-                if(err) return done(err)
-                if(res){
-                    console.log("already present")
+        } else {
+            isUrlinDB(longUrl, function (err, res) {
+                if (err) return done(err)
+                if (res) {
                     return done(null, res)
-                }else{
-                    findLargestUrl(function(err,res){
+                } else {
+                    findLargestUrl(function (err, res) {
                         const shortID = res + 1;
-                        const url = new URL({longUrl:longUrl, shortUrl:shortID})
+                        const url = new URL({ longUrl: longUrl, shortUrl: shortID })
 
-                        url.save(function(err,data){
-                            if(err) return done(err)
-                            if(data){
-                                return done(null,data.shortUrl)
+                        url.save(function (err, data) {
+                            if (err) return done(err)
+                            if (data) {
+                                return done(null, data.shortUrl)
                             }
                         })
                     })
@@ -48,44 +46,44 @@ exports.createNew = function(longUrl,done){
 }
 
 
-function isCollEmpty(done){
-    URL.countDocuments(function(err,count){
-        if(!err && count === 0){
-            return done(null,true);
-        }else if (err){
+function isCollEmpty(done) {
+    URL.countDocuments(function (err, count) {
+        if (!err && count === 0) {
+            return done(null, true);
+        } else if (err) {
             return done(err)
-        }else{
+        } else {
             return done(null, false)
         }
     });
 }
 
-function isUrlinDB(url,callback){
-    URL.findOne({longUrl:url}, function(err,data){
-        if(err) return callback(err)
-        if(data){
-            return callback(null,data.shortUrl)
-        }else{
+function isUrlinDB(url, callback) {
+    URL.findOne({ longUrl: url }, function (err, data) {
+        if (err) return callback(err)
+        if (data) {
+            return callback(null, data.shortUrl)
+        } else {
             return callback(null, null)
         }
     })
 }
 
-function findLargestUrl(callback){
-    URL.find().sort({ shortUrl:-1 }).limit(1)
-        .exec(function(err, data) {
-        if (err) return callback(err, null); 
-        return callback(null, data[0].shortUrl);
-    });
+function findLargestUrl(callback) {
+    URL.find().sort({ shortUrl: -1 }).limit(1)
+        .exec(function (err, data) {
+            if (err) return callback(err, null);
+            return callback(null, data[0].shortUrl);
+        });
 }
 
 
-exports.getLongUrl = function (shortID,callback){
-    URL.findOne({shortUrl:shortID}, function(err,res){
-        if(res){
-            return callback(null,res.longUrl)
-        }else{
-            return callback(err,null)
+exports.getLongUrl = function (shortID, callback) {
+    URL.findOne({ shortUrl: shortID }, function (err, res) {
+        if (res) {
+            return callback(null, res.longUrl)
+        } else {
+            return callback(err, null)
         }
     })
 }
